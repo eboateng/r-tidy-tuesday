@@ -1,8 +1,9 @@
 ---
+title: BEA Infrastructure Investment
 output: html_notebook
 ---
 
-# BEA Infrastructure Investment
+
 **TidyTuesday Project**
 
 ------
@@ -29,12 +30,13 @@ This study is a challenge that will provide a huge value understanding the natur
 
 
 ```{r Libraries, echo=FALSE, message=FALSE}
-library(tidyverse)
+library(tidyverse, warn.conflicts = FALSE)
 library(gganimate)
 library(hrbrthemes)
 library(ggplot2)
 library(ggpubr)
-
+library(plotly)
+fontfamily <-"Open Sans"
 
 ```
 
@@ -46,9 +48,9 @@ tuesdata <- tidytuesdayR::tt_load(2021, week = 33)
 
 
 ```{r Create datasets, echo=FALSE, message=FALSE}
-investment <- tuesdata$investment
+# investment <- tuesdata$investment
 chinvestment <- tuesdata$chain_investment
-ipd <- tuesdata$ipd
+# ipd <- tuesdata$ipd
 
 head(chinvestment)
 ```
@@ -64,52 +66,149 @@ Following the [Bureau of Economic Analysis paper](https://www.bea.gov/system/fil
 
 That being said, let's start working with those three main categories from the `chain_investment.csv`. 
 
-```{r Data Wrangling}
+```{r MainCat - Data Wrangling I }
 df_main_cat = chinvestment %>%
-  filter(group_num == 1)
+  filter(group_num == 1) %>%
+  mutate(
+    label = case_when(
+      category == "Total basic infrastructure"~"Basic",
+      category == "Total digital infrastructure"~"Digital",
+      category == "Total social infrastructure"~"Social"
+    ),
+      colorL = case_when(
+      category == "Total basic infrastructure"~"#ef476f",
+      category == "Total digital infrastructure"~"#ffd166",
+      category == "Total social infrastructure"~"#06d6a0"
+    )
+  )
 
-head(df_main_cat)
 
 ```
 
 
-```{r message=FALSE, include=FALSE, results=FALSE}
+
+
+
+```{r MainCat - Data Plot I, message=FALSE, include=FALSE, results=FALSE, fig.width = 12, fig.height = 5}
 # Plot
 chart_ti <- df_main_cat %>%
   ggplot(aes(x=year, y=gross_inv_chain, fill=category)) +
   geom_area()+
   ggtitle("Basic Infrastructures Investments ($)") +
-  theme_ipsum() +
-  ylab("$") +
-  theme(legend.position="top")+
+  scale_fill_manual(breaks=df_main_cat$category,values=df_main_cat$colorL)+
+  scale_color_manual(breaks=df_main_cat$category,values=df_main_cat$colorL)+
+  ylab("Total $ in Infrastructure Investment") +
+  theme(legend.position="top", legend.title=element_blank())+
+  annotate(geom = "segment", x=1947,xend=2017, y=600000,yend=600000, color="#343a40")+
+  annotate(geom = "segment", x=1947,xend=2017, y=300000,yend=300000, color="#343a40")+
+  annotate(geom = "text", x=1947, y=630000, label="600 billions $", color="#343a40",
+            hjust=0, size=6,family=fontfamily)+
+  annotate(geom = "text", x=1947, y=330000, label="300 billions $", color="#343a40",
+            hjust=0, size=6,family=fontfamily)+
   transition_reveal(year)
 
 
 anim_save("chart_ti.gif", chart_ti)
-# ![](goo.gif)
-
 
 ```
 
+
+
+
+
+```{r message=TRUE, warning=FALSE, fig.width = 12, fig.height = 5}
+chart_lines <- df_main_cat %>%
+  ggplot(aes(x=year, y=gross_inv_chain)) +
+  geom_line(aes(color=category))+
+  geom_point(aes(color=category))+
+  guides(fill=FALSE, color=FALSE)+
+  theme_minimal()+
+  scale_color_manual(breaks=df_main_cat$category,values=df_main_cat$colorL)+
+  ylab("Total $ in Infrastructure Investment") +
+  theme(legend.position="none", legend.title=element_blank())
+
+
+chart_area <- df_main_cat %>%
+  ggplot(aes(x=year, y=gross_inv_chain, fill=category)) +
+  geom_area()+
+  scale_fill_manual(breaks=df_main_cat$category,values=df_main_cat$colorL)+
+  scale_color_manual(breaks=df_main_cat$category,values=df_main_cat$colorL)+
+  ylab("Infrastructure Investment ($) per category") +
+  guides(fill=FALSE, color=FALSE)+
+  theme_minimal()+
+  theme(legend.position="none", legend.title=element_blank())+
+  annotate(geom = "segment", x=1947,xend=2017, y=600000,yend=600000, color="#343a40")+
+  annotate(geom = "segment", x=1947,xend=2017, y=300000,yend=300000, color="#343a40")+
+  annotate(geom = "text", x=1947, y=630000, label="600 billions $", color="#343a40",
+            hjust=0, size=6,family=fontfamily)+
+  annotate(geom = "text", x=1947, y=330000, label="300 billions $", color="#343a40",
+            hjust=0, size=6,family=fontfamily)
+  
+  
+```
 # ![](chart_ti.gif)
 
-```{r}
-data("ToothGrowth")
-head(ToothGrowth)
-
-
-# Box plot (bp)
-bxp <- ggboxplot(ToothGrowth, x = "dose", y = "len",
-                 color = "dose", palette = "jco")
-bxp
-# Dot plot (dp)
-dp <- ggdotplot(ToothGrowth, x = "dose", y = "len",
-                 color = "dose", palette = "jco", binwidth = 1)
+```{r message=TRUE, warning=FALSE, fig.width = 12, fig.height = 5}
+ggarrange(chart_area, chart_lines, ncol = 2, heights = c(10, 10), align = "v")
 ```
 
 
-```{r}
-ggarrange(bxp, dp, labels = c("A", "B"),
-          ncol = 2, nrow = 1)
+# Infrastructure Investment Breakdown (sankey)
+
+
+```{r InvBreakdown - Data Wrangling I, message=FALSE, warning=FALSE}
+options(dplyr.summarise.inform = FALSE)
+
+# Remember: We need to remove the fund sources
+dfch_grp <- chinvestment %>% 
+  group_by(category, meta_cat, group_num) %>%
+  filter(!(category %in% c("Federal", "S&L", "Private")) &(group_num!=14))   %>%
+  summarise(inv = sum(gross_inv_chain))
+
+dfch_grp <- dfch_grp %>%
+      mutate(
+        category = case_when(
+        category == "Total basic infrastructure"~"Basic",
+        category == "Total digital infrastructure"~"Digital",
+        category == "Total social infrastructure"~"Social",
+        TRUE ~category
+        ), meta_cat =case_when(
+          meta_cat == "Total basic infrastructure"~"Basic",
+          TRUE ~meta_cat
+        )
+    )
+
+# Level 1: Total infrastructure => Total basic/social/digital infrastructure
+lvl1 <- dfch_grp %>% 
+      filter(meta_cat %in% "Total infrastructure")
+
+
+lvl2 <- dfch_grp %>% filter(meta_cat %in% c(
+      "Basic",
+      "Digital",
+      "Social"
+  ))
+
+
+
+lvl3 <- dfch_grp %>% filter(meta_cat %in% lvl2$category)
+# labels <- mapply(c, unique(lvl1$meta_cat), unique(lvl1$meta_cat) SIMPLIFY = TRUE)
+
+lvl1
+lvl2
+lvl3
+
+labels
+
+```
+
+
+```{r InvBreakdown - Plotting}
+plotly(
+  type="sankey",
+  orientation="h",
+  label= lvl1$category,
+  
+)
 ```
 
