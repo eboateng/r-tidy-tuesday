@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 
-**TidyTuesday Project**
+**TidyTuesday Project (210810)**
 
 ------
 
@@ -106,8 +106,8 @@ chart_ti <- df_main_cat %>%
             hjust=0, size=6,family=fontfamily)+
   transition_reveal(year)
 
-
-anim_save("chart_ti.gif", chart_ti)
+animate(chart_ti, height = 500, width =900)
+anim_save("chart_ti.gif")
 
 ```
 
