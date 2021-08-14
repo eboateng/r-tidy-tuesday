@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/799207/28914e2aff7c46a4ade6234b4707980d
+bundleId: https://api.rpubs.com/api/v1/document/799207/28914e2aff7c46a4ade6234b4707980d
+url: http://rpubs.com/juaancabsou/799207
+when: 1628953582.86107
+lastSyncTime: 1628953582.86107

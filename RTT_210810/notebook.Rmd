@@ -1,5 +1,5 @@
 ---
-title: BEA Infrastructure Investment
+title: "BEA Infrastructure Investment"
 output: html_notebook
 ---
 
@@ -44,16 +44,11 @@ fontfamily <-"Open Sans"
 ```{r Download the data, message=FALSE, include=FALSE}
 tuesdata <- tidytuesdayR::tt_load('2021-08-10')
 tuesdata <- tidytuesdayR::tt_load(2021, week = 33)
-```
 
-
-```{r Create datasets, echo=FALSE, message=FALSE}
-# investment <- tuesdata$investment
 chinvestment <- tuesdata$chain_investment
-# ipd <- tuesdata$ipd
 
-head(chinvestment)
 ```
+
 
 # A glance to the data
 Following the [Bureau of Economic Analysis paper](https://www.bea.gov/system/files/papers/BEA-WP2020-12.pdf), **there are three main categories of infrastructure: basic, social and digital**. 
@@ -63,6 +58,10 @@ Following the [Bureau of Economic Analysis paper](https://www.bea.gov/system/fil
 * **Social infrastructure**: Determined by trends in health, education, and public safety. For social infrastructure, the share of privately owned net stock grew over time while the share of state.
 
 * **Digital infrastructure**: Communications, software...etc.
+```{r Glancing the data, echo=FALSE}
+head(chinvestment)
+
+```
 
 That being said, let's start working with those three main categories from the `chain_investment.csv`. 
 
@@ -155,6 +154,17 @@ ggarrange(chart_area, chart_lines, ncol = 2, heights = c(10, 10), align = "v")
 
 # Infrastructure Investment Breakdown (sankey)
 
+We already know how the money is invested in the three main categories (basic, social and digital) so let's break it down in order to see how much money is invested in each subcategory. 
+
+In order to do that, Sankey (*) charts are a viable option.
+
+Following the Google Charts definition, *a sankey diagram is a visualization used to depict a flow from one set of values to another. The things being connected are called nodes and the connections are called links. Sankeys are best used when you want to show a many-to-many mapping between two domains.*
+
+Split the dataset in different levels will be necessary for generating the Sankey chart (spoiler alert: There are three different levels regarding the investments). In order to do that:
+
+* **Level 1:** We will start analyzing from the `meta_cat` to the `category` when category is one of the three main categories: Basic, Social or Digital. That's because `Total infrastructure` will be our root node.
+
+* **From Level 2 to Level 3:** We will use `meta_cat` using the categories from the previous level in order to get the new nodes and so on so forth.
 
 ```{r InvBreakdown - Data Wrangling I, message=FALSE, warning=FALSE}
 options(dplyr.summarise.inform = FALSE)
@@ -178,6 +188,8 @@ dfch_grp <- dfch_grp %>%
         )
     )
 
+# dfch_grp$category <- as.factor(dfch_grp$category)
+# dfch_grp$meta_cat <- as.factor(dfch_grp$meta_cat)
 # Level 1: Total infrastructure => Total basic/social/digital infrastructure
 lvl1 <- dfch_grp %>% 
       filter(meta_cat %in% "Total infrastructure")
@@ -192,23 +204,50 @@ lvl2 <- dfch_grp %>% filter(meta_cat %in% c(
 
 
 lvl3 <- dfch_grp %>% filter(meta_cat %in% lvl2$category)
-# labels <- mapply(c, unique(lvl1$meta_cat), unique(lvl1$meta_cat) SIMPLIFY = TRUE)
+labelsV <- c(unique(lvl1$meta_cat), unique(lvl2$meta_cat), unique(lvl2$category),unique(lvl3$category))
 
-lvl1
-lvl2
-lvl3
+sourceV <-c(match(lvl1$meta_cat, labels), match(lvl2$meta_cat,labels), match(lvl3$meta_cat,labels))
+targetV <- c(match(lvl1$category, labels), match(lvl2$category,labels), match(lvl3$category,labels))
+valueV <- c(lvl1$inv, lvl2$inv, lvl3$inv)
+             
 
-labels
+# lvl1
+# lvl2
+# lvl3
 
 ```
 
 
-```{r InvBreakdown - Plotting}
-plotly(
-  type="sankey",
-  orientation="h",
-  label= lvl1$category,
+
+```{r InvBreakdown - Plotting, echo=FALSE, fig.height=6, fig.width=8, warning=FALSE}
+
+fig_sankey <- plot_ly(
+    type = "sankey",
+    orientation = "h",
   
+    node = list(
+      label = labelsV,
+      # color = c("blue", "blue", "blue", "blue", "blue", "blue"),
+      pad = 15,
+      thickness = 20,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+  link = list(
+    source = sourceV-1,
+    target = targetV-1,
+    value = valueV
+  )
 )
+
+fig_sankey <- fig_sankey %>% layout(
+  title='USA Infraestructure Investment Breakdown ($)',
+  font = list(size=10)
+)
+
+fig_sankey
+
 ```
 
