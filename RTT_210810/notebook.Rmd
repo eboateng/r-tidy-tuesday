@@ -19,13 +19,13 @@ This notebook is about *Measuring Infrastructure in the Bureau of Economic Analy
 # Introduction
 Infrastructure provides critical support for economic activity. Hence it contributes in a significant way to our living standards. This notebook will analyze the trends of infrastructure investment through the years (decades) using the measurements of infrastructure data in the U.S. National Economic Accounts(NEAs).
 
-For this notebook, I will use the `chain_investment.csv` dataset. I think that using the chained dollars(*) will give us better insights about how much important was the investment in that year(decade) comparing it with nowadays infraestructure investements. 
+For this notebook, I will use the chain_investment.csv dataset. I think that using the chained dollars(*) will give us better insights about how important the investment was in that year(decade) comparing it with nowadays infrastructure investments.
 
 * *Chained dollars: Chained dollars is a method of adjusting real dollar amounts for inflation over time, to allow the comparison of figures from different years. The U.S. Department of Commerce introduced the chained-dollar measure in 1996*.
 
 **Why is it important?**
 
-This study is a challenge that will provide a huge value understanding the nature of the surrounding infrastructure and its behavior a connected multi-network.
+This study is a challenge that will provide a huge value in understanding the nature of the surrounding infrastructure and its behavior as a connected multi-network.
 
 
 
@@ -160,11 +160,11 @@ In order to do that, Sankey (*) charts are a viable option.
 
 Following the Google Charts definition, *a sankey diagram is a visualization used to depict a flow from one set of values to another. The things being connected are called nodes and the connections are called links. Sankeys are best used when you want to show a many-to-many mapping between two domains.*
 
-Split the dataset in different levels will be necessary for generating the Sankey chart (spoiler alert: There are three different levels regarding the investments). In order to do that:
+Splitting the dataset in different levels will be necessary for generating the Sankey chart (spoiler alert: There are three different levels regarding the investments). In order to do that:
 
 * **Level 1:** We will start analyzing from the `meta_cat` to the `category` when category is one of the three main categories: Basic, Social or Digital. That's because `Total infrastructure` will be our root node.
 
-* **From Level 2 to Level 3:** We will use `meta_cat` using the categories from the previous level in order to get the new nodes and so on so forth.
+* **From Level 2 to Level 3:** We will use `meta_cat` using the categories from the previous level in order to get the new nodes and so on and  so forth.
 
 ```{r InvBreakdown - Data Wrangling I, message=FALSE, warning=FALSE}
 options(dplyr.summarise.inform = FALSE)
