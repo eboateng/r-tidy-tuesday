@@ -1,0 +1,115 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+ 
+>  - 📱 Linkedin [Juan Antonio Cabeza Sousa
+](https://www.linkedin.com/in/juan-antonio-cabeza-sousa-5b954968/)
+>  - 📬 Email:  juaancabsou@gmail.com
+>  - 🖥️ Twitter: @[Aceconhielo](https://twitter.com/Aceconhielo)
+
+
+This notebook is about *Analysing Star Trek Commands*.The data this week comes from [SpeechInteraction.org](http://www.speechinteraction.org/TNG/).
+
+```{r GetData, message=FALSE, warning=FALSE, include=FALSE}
+tuesdata <- tidytuesdayR::tt_load('2021-08-17')
+tuesdata <- tidytuesdayR::tt_load(2021, week = 34)
+computer <- tuesdata$computer
+```
+
+```{r Libraries, message=FALSE, include=FALSE}
+library(tidyverse, warn.conflicts = FALSE)
+library(ggplot2)
+library(plotly)
+library(DataExplorer)
+library(ggpubr)
+library(ggchicklet)
+library(tidytext)
+library(tm)
+library(wordcloud)
+fontfamily <-"Open Sans"
+```
+
+
+# A glance to the data
+
+Looking the *Data Dictionary* related to this data set and the amount of missing values per column, it helps us to keep just a few important columns for the visualization stage. Those columns (the ones that I will kept for the TidyTuesday visualization) are:
+* `char`: Name of the speaking character.
+* `char_type`:Either Person or Computer
+* `line`: The complete line of dialog (may contain more speech than the speech interaction). Parenthetical are directions and not spoken.
+* `type`: The type of interaction, see detailed definitions below.
+* `pri_type`: The primary interaction type as defined by the below ranking.
+* `domain`: The domain of interaction, see detailed definitions below.
+* `sub_domain`: The sub-domain of interaction, generally a specific setting, see below.
+* `interaction`: The actual speech interaction. May be shorter or longer than the line of dialog.
+
+I will discard `is_fed`and `error` because their distribution is always the same: TRUE and FALSE respectively. 
+
+```{r EDAWRANGLING, message=FALSE, warning=FALSE, include=FALSE}
+chart_intro <- plot_intro(computer)
+chart_miss <- plot_missing(computer)
+```
+
+```{r EDACHARTS,fig.height=5, fig.width=12,}
+ggarrange(chart_intro, chart_miss, ncol = 2, heights = c(10, 10))
+```
+```{r Infographics Datasets Generator, message=FALSE, warning=FALSE}
+# Chart 1: Interactions
+interactions <- head(computer %>% filter(char != 'Computer Voice') %>%
+  group_by(char) %>%
+  count(sort = TRUE),10)
+
+interactions$char <- factor(interactions$char, levels = interactions$char[order(interactions$n)])
+colnames(interactions) <- c('Character', 'Interactions')
+
+# Chart 2: Wordclouds
+textcleaned <- computer %>%
+  unnest_tokens(word, interaction) %>%
+  anti_join(get_stopwords(source = "snowball"))
+
+df_wordcloud <- textcleaned %>% group_by(word) %>% count(sort = TRUE)
+```
+
+
+
+```{r Infographics Chart Generator}
+
+backgroundcolor <- "#264653"
+solidchartcolor <- "#e9c46a"
+gridlines <- "#006d77"
+
+
+# Chart 1: Interactions
+chartinteractions<-ggplot(data=interactions, aes(x=Character, y=Interactions)) +
+  geom_chicklet(stat="identity", color=solidchartcolor, fill=solidchartcolor, width = 0.75, radius = grid::unit(1, 'mm'))+
+  geom_text(aes(label=Interactions), hjust=1.6,vjust= 0.25, color=backgroundcolor, size=3.5)+
+  theme(
+    axis.text.x = element_text(colour = 'white', family=fontfamily),
+    axis.title.x = element_text(colour = 'white', family=fontfamily),
+    axis.text.y = element_text(colour = 'white', family=fontfamily),
+    axis.title.y = element_text(colour = 'white', family=fontfamily),
+    panel.background = element_rect(fill = backgroundcolor, colour = backgroundcolor, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid', colour = gridlines), 
+    panel.grid.minor = element_line(size = 0.25, linetype = 'solid', colour = gridlines),
+    plot.background = element_rect(fill = backgroundcolor),
+    plot.title = element_text(colour="white"),
+    plot.margin = unit(c(1,1,1,1), "cm")
+  )+
+  ggtitle("Users with more interactions")+
+  coord_flip()
+
+
+
+wordcloudchart <- wordcloud(words = df_wordcloud$word ,
+                            freq = df_wordcloud$n,
+                            min.freq = 1,max.words=200,
+                            random.order=FALSE,
+                            rot.per=0.35,
+                            colors=brewer.pal(8, "Dark2"))
+
+
+
+```
+
+
