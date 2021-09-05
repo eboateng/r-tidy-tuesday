@@ -1,34 +1,41 @@
-library(dplyr)
-library(tidyr)  
+library(tidyverse)
 
 
 
 
 function(input, output, session) {
-
   
-  y <- c('giraffes', 'orangutans', 'monkeys')
-  SF_Zoo <- c(20, 14, 23)
-  LA_Zoo <- c(12, 18, 29)
-  data <- data.frame(y, SF_Zoo, LA_Zoo)
+  tuesdata <- tidytuesdayR::tt_load('2021-08-31')
+  tuesdata <- tidytuesdayR::tt_load(2021, week = 36)
+  bird_baths <- tuesdata$bird_baths
+  df <- na.omit(bird_baths)
+  # ========================================
+  # First chart about rural vs urban by year
+  # ========================================
+  urbanrural <- df %>%
+    group_by(survey_year, urban_rural) %>%
+    summarise(count = n()) %>%
+    spread(urban_rural, count)
   
-  fig <- plot_ly(data, x = ~SF_Zoo, y = ~y, type = 'bar', orientation = 'h', name = 'SF Zoo',
-                 marker = list(color = 'rgba(246, 78, 139, 0.6)',
-                               line = list(color = 'rgba(246, 78, 139, 1.0)',
-                                           width = 3)))
-  fig <- fig %>% add_trace(x = ~LA_Zoo, name = 'LA Zoo',
-                           marker = list(color = 'rgba(58, 71, 80, 0.6)',
-                                         line = list(color = 'rgba(58, 71, 80, 1.0)',
-                                                     width = 3)))
+  urbanrural$survey_year <- as.factor(urbanrural$survey_year)
+  
+  fig <- plot_ly(urbanrural, x = ~Rural, y = ~survey_year, type = 'bar', orientation = 'h', name = 'Rural',
+                 marker = list(color = 'rgba(181, 101, 118, 0.6)',
+                               line = list(color = 'rgba(181, 101, 118, 1.0)', width = 3)))
+  
+  fig <- fig %>% add_trace(x = ~Urban, name = 'Urban',
+                           marker = list(color = 'rgba(53, 80, 112, 0.6)',
+                                         line = list(color = 'rgba(53, 80, 112, 1.0)', width = 3)))
+  
   fig <- fig %>% layout(barmode = 'stack',
-                        xaxis = list(title = ""),
-                        yaxis = list(title =""))
+                        xaxis = list(title = "Birds sighted"),
+                        yaxis = list(title ="Survey Year"),
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)'
+                        )
   
-  fig <- fig %>% layout(plot_bgcolor  = "rgba(0, 0, 0, 0)",
-                        paper_bgcolor = "rgba(0, 0, 0, 0)",
-                        fig_bgcolor   = "rgba(0, 0, 0, 0)")
   
   
   output$birdsbar1 <- renderPlotly(fig)
-
+  output$birdsbar2 <- renderPlotly(fig)
 }
