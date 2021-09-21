@@ -32,37 +32,76 @@ nom90 <- nominees %>% filter(year >= 1990)
 
 ```{r Best show: Double barchart}
 
-shows <- 
-  nom90 %>% 
-  group_by(title, type) %>% 
-  summarise(no = n()) %>% 
+
+shows <-
+  nom90 %>%
+  group_by(title, type) %>%
+  summarise(no = n()) %>%
   spread (type, no)
 
 shows[is.na(shows)] <- 0
+shows$totalType <- shows$Nominee + shows$Winner
+shows$totalTypeRatio <- shows$Winner/shows$Nominee
 
 # Top 20 shows by:
 # Winners
-WStop20 <-  shows[order(-shows$Winner),][1:20,]
+WStop20 <-  shows[order(-shows$Winner), ][1:10, ]
+WStop20Sort <- WStop20[order(WStop20$totalType), ]
+WStop20Sort$title <- as.factor(WStop20Sort$title)
 
 
 
-
-viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2){
- fig <- plot_ly(x = xaxis1, y = yaxis, type = 'bar', orientation = 'h', name = xname1,
-        marker = list(color = 'rgba(153, 153, 153, 0.6)', line = list(color = 'rgba(153, 153, 153, 1.0)', width = 3)))
- 
-fig <- fig %>% add_trace(x = xaxis2, name = xname2, 
-                         marker = list(color = 'rgba(255, 153, 0, 0.6)', line = list(color = 'rgba(255, 153, 0, 1.0)',width = 3)))
-
-fig <- fig %>% layout(
-  barmode = 'stack',
-  xaxis = list(title = ""),
-  yaxis = list(categoryarray = xaxis1, categoryorder = "array"))
-
-fig 
+viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2) {
+  
+  fig <- plot_ly(
+    df,
+    x = xaxis1,
+    y = yaxis,
+    type = 'bar',
+    text=xaxis1,
+    textposition='auto',
+    orientation = 'h',
+    name = xname1,
+    marker = list(
+      color = 'rgba(153, 153, 153, 0.6)',
+      line = list(color = 'rgba(153, 153, 153, 1.0)', width = 3)
+    )
+  )
+  
+  fig <- fig %>% add_trace(
+    x = xaxis2,
+    name = xname2,
+    text=xaxis2,
+    textposition='auto',
+    marker = list(
+      color = 'rgba(255, 153, 0, 0.6)',
+      line = list(color = 'rgba(255, 153, 0, 1.0)', width = 3)
+    )
+  )
+  m <- list(l=200, r=20, b=10, t=10)
+  fig <- fig %>% layout(
+    barmode = 'stack',
+    xaxis = list(title = "Nominee and Winners"),
+    yaxis = list(categoryorder = "array",
+                 categoryarray = yaxis,
+                 automargin=T,
+                 ticksuffix = " "
+                 ),
+    margin=m
+  )
+  
+  
+  fig
 }
 
-viz_dbar(WStop20,WStop20$Nominee, WStop20$Winner, WStop20$title, "Nominee", "Winner")
+viz_dbar(
+  WStop20Sort,
+  WStop20Sort$Nominee,
+  WStop20Sort$Winner,
+  WStop20Sort$title,
+  "Nominee",
+  "Winner"
+)
 
 ```
 

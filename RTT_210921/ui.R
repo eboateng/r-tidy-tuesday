@@ -1,5 +1,8 @@
 library(shiny)
 library(shinyWidgets)
+library(plotly)
+library(shinydashboard)
+
 
 # Dashboard properties
 dash_title = 'Emmy Awards and Nominees'
@@ -7,8 +10,33 @@ dash_project = 'RTidyTuesday'
 dash_date = 'September - 2021'
 dash_background = '#f3f3f3ff'
 
-ui <- shinyUI(fluidPage(
-  titlePanel(dash_title),
-  setBackgroundColor(dash_background),
-  p(dash_project)
-))
+dash_years = seq(1990, 2021)
+
+ui <- dashboardPage(
+  skin = "yellow",
+  dashboardHeader(
+    title = "Emmy Awards"
+  ),
+  dashboardSidebar(
+    selectizeInput("sbyear", label="Year", choices=c("All", dash_years), selected="2021", width="100%"),
+    selectizeInput("sbproducer", label="Producer", choices=c("All", dash_years), selected="All", width="100%"),
+    selectizeInput("sbshow", label="Show", choices=c("All", dash_years), selected="All", width="100%")
+    
+  ),
+  dashboardBody(
+    fluidRow(
+      column(
+        width = 4,
+        plotlyOutput("chart1")
+      ),
+      column(
+        width = 5,
+        plotlyOutput("chart2")
+      ),
+      column(
+        width = 3,
+        plotlyOutput("chart3")
+      )
+    )
+  )
+)
