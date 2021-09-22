@@ -2,6 +2,8 @@ library(tidyverse)
 library(data.table)
 library(plotly)
 source("doubleBarPlot.R")
+source("filters.R")
+source("dataCharts.R")
 
 # # # Read the data
 # tuesdata <- tidytuesdayR::tt_load('2021-09-21')
@@ -12,7 +14,7 @@ source("doubleBarPlot.R")
 # nominees[, `:=`(
 #   clean_category = tolower(gsub('.{7}$', '', category)),
 #   title = tolower(title),
-#   producer = tolower(producer),
+#   distributor = tolower(distributor),
 #   distributor = tolower(distributor)
 # 
 # )]
@@ -26,47 +28,43 @@ server = function(input, output, session) {
   tolisten <- reactive({
     list(
       input$sbyear,
-      input$sbproducer,
+      input$sbdistributor,
       input$sbshow
 
     )
   })
-
+  # Update selectizes
+  listdistributors <-  sort(unique(nom90$distributor))
+  updateSelectizeInput(session = session, inputId = "sbdistributor", selected = 'All', choices = c('All',listdistributors))
+  
   observeEvent(tolisten(), {
     sbyear <- input$sbyear
-    sbproducer <- input$sbproducer
+    sbdistributor <- input$sbdistributor
     sbshow <- input$sbshow
+    print(sbdistributor)
     
-    print(sbyear)
-    print(sbproducer)
-    print(sbshow)
+    if
+    if((sbdistributor[1]!='All')& ('All' %in% sbdistributor)){
+      updateSelectizeInput(session = session, inputId = "sbdistributor", selected = 'All', choices = c('All',listdistributors))
+    }else{
+      newlist <- sbdistributor[sbdistributor!='All']
+      print('else')
+      print(newlist)
+      updateSelectizeInput(session = session, inputId = "sbdistributor", selected = sbdistributor, choices = c('All',listdistributors))
+    }
+    
+    # df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
+    # df_c1 <- generateData_chart1(df_filter)
+   
+    # 
+    # chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$title, "Nominee", "Winner")
+    # 
+    # output$chart1 <- renderPlotly(chart1Viz)
+    # output$chart2 <- renderPlotly(chart1Viz)
+    # output$chart3 <- renderPlotly(chart1Viz)
   })
-  # shows <-
-  #   nom90 %>%
-  #   group_by(title, type) %>%
-  #   summarise(no = n()) %>%
-  #   spread (type, no)
-  # 
-  # shows[is.na(shows)] <- 0
-  # shows$totalType <- shows$Nominee + shows$Winner
-  # shows$totalTypeRatio <- shows$Winner/shows$Nominee
-  # 
-  # # Top 20 shows by:
-  # # Winners
-  # WStop20 <-  shows[order(-shows$Winner), ][1:10, ]
-  # WStop20Sort <- WStop20[order(WStop20$totalType), ]
-  # WStop20Sort$title <- as.factor(WStop20Sort$title)
-  # 
-  # 
-  # chart1 <- viz_dbar(
-  #   WStop20Sort,
-  #   WStop20Sort$Nominee,
-  #   WStop20Sort$Winner,
-  #   WStop20Sort$title,
-  #   "Nominee",
-  #   "Winner"
-  # )
-  # output$chart1 <- renderPlotly(chart1)
-  # output$chart2 <- renderPlotly(chart1)
-  # output$chart3 <- renderPlotly(chart1)
+  
+  
+
+
 }

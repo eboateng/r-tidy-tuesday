@@ -36,7 +36,7 @@ viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2) {
                  ticksuffix = " ",
                  tickfont = list(size=10)
                  ),
-    legend = list(bgcolor = 'rgba(0, 0, 0, 0)'),
+    legend = list(bgcolor = 'rgba(0, 0, 0, 0)')
     
   )
   

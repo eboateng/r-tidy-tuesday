@@ -18,9 +18,9 @@ ui <- dashboardPage(
     title = "Emmy Awards"
   ),
   dashboardSidebar(
-    selectizeInput("sbyear", label="Year", choices=c("All", dash_years), selected="2021", width="100%"),
-    selectizeInput("sbproducer", label="Producer", choices=c("All", dash_years), selected="All", width="100%"),
-    selectizeInput("sbshow", label="Show", choices=c("All", dash_years), selected="All", width="100%")
+    selectizeInput("sbyear", label="Year", choices=c("All", dash_years), selected="2021", width="100%", multiple = TRUE),
+    selectizeInput("sbdistributor", label="distributor", choices=c("All"), selected="All", width="100%", multiple = TRUE),
+    selectizeInput("sbshow", label="Show", choices=c("All", dash_years), selected="All", width="100%", multiple = TRUE)
     
   ),
   dashboardBody(
