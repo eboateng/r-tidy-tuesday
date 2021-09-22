@@ -29,13 +29,15 @@ viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2) {
     barmode = 'stack',
     plot_bgcolor='rgb(0, 0, 0, 0)',
     paper_bgcolor='rgb(0, 0, 0, 0)',
-    fig_bgcolor   = "rgba(0, 0, 0, 0)",
     xaxis = list(title = "Nominee and Winners"),
     yaxis = list(categoryorder = "array",
                  categoryarray = yaxis,
                  automargin=T,
-                 ticksuffix = " "),
-    legend = list(bgcolor = 'rgba(0, 0, 0, 0)')
+                 ticksuffix = " ",
+                 tickfont = list(size=10)
+                 ),
+    legend = list(bgcolor = 'rgba(0, 0, 0, 0)'),
+    
   )
   
   
