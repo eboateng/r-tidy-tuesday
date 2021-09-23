@@ -31,7 +31,7 @@ server = function(input, output, session) {
       input$sbyear,
       input$sbdistributor,
       input$sbshow
-
+    
     )
   })
   
@@ -40,21 +40,36 @@ server = function(input, output, session) {
     sbdistributor <- input$sbdistributor
     sbshow <- input$sbshow
     
+    if (is.null(sbyear)){
+      sbyear = 'All'
+    }
+    if(is.null(sbdistributor)){
+      sbdistributor = 'All'
+    }
+    if(is.null(sbshow)){
+      sbshow = 'All'
+    }
+    
+    df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
+
+    
     checkFilters(sbyear, session, "sbyear", dash_years)
     checkFilters(sbdistributor, session, "sbdistributor", dash_distributors)
     checkFilters(sbshow, session, "sbshow", dash_shows)
-    
 
-    
     df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
+    
+    # Chart 1
     df_c1 <- generateData_chart1(df_filter)
+    chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$titleW, "Nominee", "Winner")
+    output$chart1 <- renderPlotly(chart1Viz)
+    
+
+    
+    
+    
 
 
-    # chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$title, "Nominee", "Winner")
-    #
-    # output$chart1 <- renderPlotly(chart1Viz)
-    # output$chart2 <- renderPlotly(chart1Viz)
-    # output$chart3 <- renderPlotly(chart1Viz)
   })
   
   

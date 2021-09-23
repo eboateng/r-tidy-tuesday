@@ -3,7 +3,6 @@ library(shinyWidgets)
 library(plotly)
 library(shinydashboard)
 
-
 # Dashboard properties
 dash_title = 'Emmy Awards and Nominees'
 dash_project = 'RTidyTuesday'
@@ -12,14 +11,15 @@ dash_background = '#f3f3f3ff'
 
 
 ui <- dashboardPage(
-  skin = "yellow",
+  skin='yellow',
+  
   dashboardHeader(
     title = "Emmy Awards"
   ),
   dashboardSidebar(
     selectizeInput("sbyear", label="Year", choices=c("2021"), selected="2021", width="100%", multiple = TRUE),
     selectizeInput("sbdistributor", label="Distributor", choices=c("All"), selected="All", width="100%", multiple = TRUE),
-    selectizeInput("sbshow", label="Show", choices=c("All", dash_years), selected="All", width="100%", multiple = TRUE)
+    selectizeInput("sbshow", label="Show", choices=c("All"), selected="All", width="100%", multiple = TRUE)
     
   ),
   dashboardBody(

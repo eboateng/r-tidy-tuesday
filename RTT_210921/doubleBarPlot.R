@@ -1,4 +1,6 @@
 viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2) {
+  
+  
   fig <- plot_ly(
     df,
     x = xaxis1,
@@ -29,14 +31,14 @@ viz_dbar <- function(df, xaxis1, xaxis2, yaxis, xname1, xname2) {
     barmode = 'stack',
     plot_bgcolor='rgb(0, 0, 0, 0)',
     paper_bgcolor='rgb(0, 0, 0, 0)',
-    xaxis = list(title = "Nominee and Winners"),
+    xaxis = list(title = "Nominee and Winners", showgrid = F),
     yaxis = list(categoryorder = "array",
                  categoryarray = yaxis,
-                 automargin=T,
                  ticksuffix = " ",
-                 tickfont = list(size=10)
+                 showgrid = F
                  ),
     legend = list(bgcolor = 'rgba(0, 0, 0, 0)')
+    
     
   )
   
