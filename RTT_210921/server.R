@@ -21,8 +21,9 @@ source("dataCharts.R")
 # 
 # nom90 <- nominees %>% filter(year >= 1990)
 
-
-
+dash_years = seq(1990, 2021)
+dash_distributors <-  sort(unique(nom90$distributor))
+dash_shows <-  sort(unique(nom90$title))
 server = function(input, output, session) {
   
   tolisten <- reactive({
@@ -33,32 +34,24 @@ server = function(input, output, session) {
 
     )
   })
-  # Update selectizes
-  listdistributors <-  sort(unique(nom90$distributor))
-  updateSelectizeInput(session = session, inputId = "sbdistributor", selected = 'All', choices = c('All',listdistributors))
   
   observeEvent(tolisten(), {
     sbyear <- input$sbyear
     sbdistributor <- input$sbdistributor
     sbshow <- input$sbshow
-    print(sbdistributor)
     
-    if
-    if((sbdistributor[1]!='All')& ('All' %in% sbdistributor)){
-      updateSelectizeInput(session = session, inputId = "sbdistributor", selected = 'All', choices = c('All',listdistributors))
-    }else{
-      newlist <- sbdistributor[sbdistributor!='All']
-      print('else')
-      print(newlist)
-      updateSelectizeInput(session = session, inputId = "sbdistributor", selected = sbdistributor, choices = c('All',listdistributors))
-    }
+    checkFilters(sbyear, session, "sbyear", dash_years)
+    checkFilters(sbdistributor, session, "sbdistributor", dash_distributors)
+    checkFilters(sbshow, session, "sbshow", dash_shows)
     
-    # df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
-    # df_c1 <- generateData_chart1(df_filter)
-   
-    # 
+
+    
+    df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
+    df_c1 <- generateData_chart1(df_filter)
+
+
     # chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$title, "Nominee", "Winner")
-    # 
+    #
     # output$chart1 <- renderPlotly(chart1Viz)
     # output$chart2 <- renderPlotly(chart1Viz)
     # output$chart3 <- renderPlotly(chart1Viz)

@@ -10,7 +10,6 @@ dash_project = 'RTidyTuesday'
 dash_date = 'September - 2021'
 dash_background = '#f3f3f3ff'
 
-dash_years = seq(1990, 2021)
 
 ui <- dashboardPage(
   skin = "yellow",
@@ -18,8 +17,8 @@ ui <- dashboardPage(
     title = "Emmy Awards"
   ),
   dashboardSidebar(
-    selectizeInput("sbyear", label="Year", choices=c("All", dash_years), selected="2021", width="100%", multiple = TRUE),
-    selectizeInput("sbdistributor", label="distributor", choices=c("All"), selected="All", width="100%", multiple = TRUE),
+    selectizeInput("sbyear", label="Year", choices=c("2021"), selected="2021", width="100%", multiple = TRUE),
+    selectizeInput("sbdistributor", label="Distributor", choices=c("All"), selected="All", width="100%", multiple = TRUE),
     selectizeInput("sbshow", label="Show", choices=c("All", dash_years), selected="All", width="100%", multiple = TRUE)
     
   ),
