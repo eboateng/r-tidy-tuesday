@@ -7,11 +7,11 @@ library(shinydashboard)
 dash_title = 'Emmy Awards and Nominees'
 dash_project = 'RTidyTuesday'
 dash_date = 'September - 2021'
-dash_background = '#f3f3f3ff'
+dash_background = c('#262626')
 
 
 ui <- dashboardPage(
-  skin='yellow',
+  
   
   dashboardHeader(
     title = "Emmy Awards"
@@ -23,6 +23,12 @@ ui <- dashboardPage(
     
   ),
   dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+      tags$link(rel="preconnect", href="https://fonts.googleapis.com"),
+      
+      tags$link(href="https://fonts.googleapis.com/css2?family=Nunito&display=swap", rel="stylesheet")
+    ),
     fluidRow(
       column(
         width = 4,

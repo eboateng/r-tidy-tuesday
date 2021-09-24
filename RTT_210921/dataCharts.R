@@ -25,7 +25,7 @@ generateData_chart1 <- function(df) {
     
     res <- WStop10[order(WStop10$totalType),]
     res$titleW <- sapply(res$title, 
-                          FUN = function(x) {paste(strwrap(x, width = 20), collapse = "<br>")})
+                          FUN = function(x) {paste(strwrap(x, width = 20), collapse = " <br>")})
   }
   return(res)
 }

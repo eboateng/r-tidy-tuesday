@@ -1,0 +1,18 @@
+.skin-blue .main-header .logo {
+  background-color: #40807f;
+  font-family: 'Nunito', sans-serif;
+  
+}
+.skin-blue .main-header .logo:hover {
+  background-color: #333333;
+}
+.skin-blue .main-header .navbar {
+  background-color: #54a5a4;
+}
+
+ .skin-blue .main-sidebar{
+   background-color: #35283C;
+ }
+ .control-label{
+  font-family: 'Nunito', sans-serif;
+ }
