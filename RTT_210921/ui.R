@@ -36,11 +36,18 @@ ui <- dashboardPage(
       ),
       column(
         width = 5,
-        plotlyOutput("chart2")
+
       ),
       column(
         width = 3,
-        plotlyOutput("chart3")
+
+      )
+    ),
+    hr(),
+    fluidRow(
+      column(
+        width = 6,
+        imageOutput("chart3")
       )
     )
   )

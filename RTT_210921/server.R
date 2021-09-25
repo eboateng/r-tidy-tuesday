@@ -1,9 +1,11 @@
 library(tidyverse)
 library(data.table)
 library(plotly)
-source("doubleBarPlot.R")
-source("filters.R")
-source("dataCharts.R")
+source("front/doubleBarPlot.R")
+
+
+source("backend/filters.R")
+source("backend/dataCharts.R")
 
 # # # Read the data
 # tuesdata <- tidytuesdayR::tt_load('2021-09-21')
@@ -51,7 +53,6 @@ server = function(input, output, session) {
     }
     
     df_filter <- applyfilters(nom90, sbyear, sbdistributor, sbshow)
-
     
     checkFilters(sbyear, session, "sbyear", dash_years)
     checkFilters(sbdistributor, session, "sbdistributor", dash_distributors)
@@ -64,15 +65,9 @@ server = function(input, output, session) {
     chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$titleW, "Nominee", "Winner")
     output$chart1 <- renderPlotly(chart1Viz)
     
-
-    
-    
-    
-
-
+    # Chart 3
+      output$chart3 <- renderImage({
+      # outfile <- tempfile(fileext = '.gif')
+      list(src = "showsRace.gif", contentType = 'image/gif')}, deleteFile = FALSE)
   })
-  
-  
-
-
 }

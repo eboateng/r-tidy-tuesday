@@ -7,6 +7,11 @@ output: html_notebook
 library(tidyverse)
 library(data.table)
 library(plotly)
+library(ggplot2)
+library(gganimate)
+library(waffle)
+# install.packages("waffle", repos = "https://cinc.rud.is")
+
 ```
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
@@ -103,11 +108,80 @@ viz_dbar(
 ```
 
 ```{r Best show: Through time}
+showsYear <-
+  nom90 %>%
+  group_by(year, title, type) %>%
+  summarise(no = n()) %>%
+  spread (type, no)
+
+
+showsYear[is.na(showsYear)] <- 0
+showsYear$totalType <- showsYear$Nominee + showsYear$Winner
 
 
 
+datos2 <- showsYear %>%
+  group_by(year) %>%
+  arrange(year, desc(totalType)) %>%
+  mutate(ranking = row_number()) %>%
+  filter(ranking <=10)
+
+datos2$titleW <- sapply(datos2$title, FUN = function(x) {paste(strwrap(x, width = 20), collapse = '\n')})
+backgroundcolor <- "#ECF0F5"
+backgroundcolor <- "#ECF0F5"
+animacion <- datos2 %>%
+  ggplot() +
+  geom_col(aes(ranking, totalType, fill = titleW)) +
+  geom_text(aes(ranking, y=0 , label = titleW), hjust=1.1) + 
+  geom_text(aes(x=10, y=max(totalType) , label = as.factor(year)), vjust = 0.2, alpha = 0.5,  col = "gray", size = 20) +
+  coord_flip(clip = "off", expand = FALSE) + scale_x_reverse() +
+  theme_minimal() + theme(
+    panel.grid = element_blank(), 
+    legend.position = "none",
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    plot.margin = margin(1, 4, 2,6, "cm"),
+    panel.background = element_rect(fill = backgroundcolor, color = NA),
+    plot.background = element_rect(fill = backgroundcolor),
+    # panel.border = element_rect(colour = backgroundcolor),
+
+  
+  ) +
+  transition_states(year, state_length = 0, transition_length = 2) +
+  enter_fade() +
+  exit_fade() + 
+  ease_aes('quadratic-in-out') 
+
+anim_save("showsRace.gif", animate(animacion, width = 900, height = 432, fps = 25, duration = 30, rewind = FALSE))
+```
+
+```{r Shows waffles overtime}
+showsYear <-
+  nom90 %>%
+  group_by(year, title, type) %>%
+  summarise(no = n()) %>%
+  spread (type, no)
 
 
+showsYear[is.na(showsYear)] <- 0
 
+showsYearTest <- showsYear %>% filter(title == 'lost')
+
+
+df <- data.frame(grupo = LETTERS[1:3],
+                 valor = c(25, 20, 35))
+df_melt <- reshape2::melt(showsYearTest, id.vars=c('year','title'))
+# Gráfico waffle
+ggplot(df_melt, aes(fill = variable, values = value)) +
+  geom_waffle(n_rows = 8, size = 0.9, colour = "white") +
+  scale_fill_manual(name = NULL,
+                    values = c("#999999", "#FF9900"),
+                    labels = c("Nominee", "Winner")) +
+  coord_equal() +
+  theme_void()+
+  theme(legend.position="top")+
+  facet_wrap(~year, nrow = 1, strip.position = "bottom")
 
 ```
+
