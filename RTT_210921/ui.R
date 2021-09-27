@@ -44,7 +44,6 @@ ui <- dashboardPage(
 
       )
     ),
-    hr(),
     fluidRow(
       column(
         width = 6,

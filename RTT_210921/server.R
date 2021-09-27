@@ -8,21 +8,19 @@ source("front/wafflesPlot.R")
 source("backend/filters.R")
 source("backend/dataCharts.R")
 
-# # # Read the data
-# tuesdata <- tidytuesdayR::tt_load('2021-09-21')
-# tuesdata <- tidytuesdayR::tt_load(2021, week = 39)
-# nominees <- as.data.table(tuesdata$nominees)
-# 
-# # ETL Stage
-# nominees[, `:=`(
-#   clean_category = tolower(gsub('.{7}$', '', category)),
-#   title = tolower(title),
-#   distributor = tolower(distributor),
-#   distributor = tolower(distributor)
-# 
-# )]
-# 
-# nom90 <- nominees %>% filter(year >= 1990)
+# # Read the data
+tuesdata <- tidytuesdayR::tt_load('2021-09-21')
+tuesdata <- tidytuesdayR::tt_load(2021, week = 39)
+nominees <- as.data.table(tuesdata$nominees)
+
+# ETL Stage
+nominees[, `:=`(
+  clean_category = tolower(gsub('.{7}$', '', category)),
+  title = tolower(title),
+  distributor = tolower(distributor)
+)]
+
+nom90 <- nominees %>% filter(year >= 1990)
 
 dash_years = seq(1990, 2021)
 dash_distributors <-  sort(unique(nom90$distributor))
