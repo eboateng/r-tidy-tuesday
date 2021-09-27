@@ -2,6 +2,7 @@ library(tidyverse)
 library(data.table)
 library(plotly)
 source("front/doubleBarPlot.R")
+source("front/wafflesPlot.R")
 
 
 source("backend/filters.R")
@@ -64,6 +65,11 @@ server = function(input, output, session) {
     df_c1 <- generateData_chart1(df_filter)
     chart1Viz <- viz_dbar(df_c1, df_c1$Nominee, df_c1$Winner,df_c1$titleW, "Nominee", "Winner")
     output$chart1 <- renderPlotly(chart1Viz)
+    
+    # Chart 2
+    df_c2 <- generateData_chart2(df_filter)
+    chart2Viz <- viz_waffles(df_c2)
+    output$chart2 <- renderPlot(chart2Viz)
     
     # Chart 3
       output$chart3 <- renderImage({

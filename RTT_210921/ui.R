@@ -36,6 +36,7 @@ ui <- dashboardPage(
       ),
       column(
         width = 5,
+        plotOutput("chart2")
 
       ),
       column(

@@ -31,21 +31,13 @@ generateData_chart1 <- function(df) {
 }
 
 
-generateData_chart3 <- function(df){
+generateData_chart2 <- function(df){
   showsYear <-
     df %>%
     group_by(year, title, type) %>%
     summarise(no = n()) %>%
     spread (type, no)
-  
-  showsYear$totalType <- showsYear$Nominee + showsYear$Winner
-  
-  showYear15 <- showsYear %>%
-    group_by(year) %>%
-    arrange(year, desc(totalType)) %>%
-    mutate(ranking = row_number()) %>%
-    filter(ranking <=15)
-  
-  
-  return(showYear15)
+  showsYear[is.na(showsYear)] <- 0
+  df_melt <- reshape2::melt(showsYear, id.vars=c('year','title'))
+  return(df_melt)
 }
