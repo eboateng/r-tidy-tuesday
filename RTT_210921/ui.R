@@ -12,7 +12,6 @@ dash_background = c('#262626')
 
 ui <- dashboardPage(
   
-  
   dashboardHeader(
     title = "Emmy Awards"
   ),
@@ -35,15 +34,13 @@ ui <- dashboardPage(
         plotlyOutput("chart1")
       ),
       column(
-        width = 5,
+        width = 8,
+        style = "background-color:#ECF0F5;",
         plotOutput("chart2")
-
-      ),
-      column(
-        width = 3,
 
       )
     ),
+    hr(),
     fluidRow(
       column(
         width = 6,

@@ -7,20 +7,20 @@ source("front/wafflesPlot.R")
 
 source("backend/filters.R")
 source("backend/dataCharts.R")
-
-# # Read the data
-tuesdata <- tidytuesdayR::tt_load('2021-09-21')
-tuesdata <- tidytuesdayR::tt_load(2021, week = 39)
-nominees <- as.data.table(tuesdata$nominees)
-
-# ETL Stage
-nominees[, `:=`(
-  clean_category = tolower(gsub('.{7}$', '', category)),
-  title = tolower(title),
-  distributor = tolower(distributor)
-)]
-
-nom90 <- nominees %>% filter(year >= 1990)
+# 
+# # # Read the data
+# tuesdata <- tidytuesdayR::tt_load('2021-09-21')
+# tuesdata <- tidytuesdayR::tt_load(2021, week = 39)
+# nominees <- as.data.table(tuesdata$nominees)
+# 
+# # ETL Stage
+# nominees[, `:=`(
+#   clean_category = tolower(gsub('.{7}$', '', category)),
+#   title = tolower(title),
+#   distributor = tolower(distributor)
+# )]
+# 
+# nom90 <- nominees %>% filter(year >= 1990)
 
 dash_years = seq(1990, 2021)
 dash_distributors <-  sort(unique(nom90$distributor))
@@ -65,7 +65,13 @@ server = function(input, output, session) {
     output$chart1 <- renderPlotly(chart1Viz)
     
     # Chart 2
-    df_c2 <- generateData_chart2(df_filter)
+    top_shows <- df_c1[order(df_c1$totalType, decreasing = TRUE),]
+    top_show <- first(top_shows)$title
+    print(df_c1)
+    print('TOP SHOW')
+    print(top_show)
+    
+    df_c2 <- generateData_chart2(df_filter, top_show)
     chart2Viz <- viz_waffles(df_c2)
     output$chart2 <- renderPlot(chart2Viz)
     
