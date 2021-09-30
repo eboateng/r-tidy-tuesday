@@ -131,6 +131,7 @@ backgroundcolor <- "#ECF0F5"
 backgroundcolor <- "#ECF0F5"
 animacion <- datos2 %>%
   ggplot() +
+  
   geom_col(aes(ranking, totalType, fill = titleW)) +
   geom_text(aes(ranking, y=0 , label = titleW), hjust=1.1) + 
   geom_text(aes(x=10, y=max(totalType) , label = as.factor(year)), vjust = 0.2, alpha = 0.5,  col = "gray", size = 20) +
@@ -183,5 +184,41 @@ ggplot(df_melt, aes(fill = variable, values = value)) +
   theme(legend.position="top")+
   facet_wrap(~year, nrow = 1, strip.position = "bottom")
 
+```
+```{r}
+library(ggrepel)
+library(ggtext)
+
+shows <-
+  nom90 %>%
+  filter(distributor%in% c('netflix', 'hbo', 'prime video', 'apple tv', 'disney+'))%>%
+  group_by(distributor, type, year) %>%
+  summarise(no = n()) %>%
+  spread (type, no)
+
+
+
+
+
+
+
+showPlot$logo <- NA
+showPlot$logo[showPlot$distributor=='netflix'] <- "<img width=20 src='https://i.pinimg.com/originals/8c/51/0e/8c510ee7de078ac4eaafdb9d15a810dd.png'>"
+# showPlot$logo[showPlot$distributor=='apple tv'] <- "<img width=20 src='https://wiseplaylistasiptv.com/wp-content/uploads/2020/11/1269701_ico.png'>"
+showPlot$logo[showPlot$distributor=='hbo'] <- "<img width=20 src='https://img.apksum.com/e2/com.hbo.android.app/3.6.1/icon.png'>"
+showPlot$logo[showPlot$distributor=='disney+'] <- "<img width=20 src='https://cdn.iconscout.com/icon/free/png-256/disney-282116.png'>"
+showPlot$logo[showPlot$distributor=='prime video'] <- "<img width=20 src='https://cdn.iconscout.com/icon/free/png-256/disney-282116.png'>"
+
+
+
+showPlot <- showPlot %>% 
+  mutate(label = if_else(year == max(year), as.character(logo), NA_character_))
+
+
+
+ggplot(showPlot, aes(x=year, y=Winner, group=distributor)) +
+  geom_line(aes(color=distributor))+
+  geom_point(aes(color=distributor))+
+  geom_richtext(aes(label = label), nudge_x = 1, na.rm = TRUE, fill = alpha(c("white"),0), color= alpha(c("white"),0))
 ```
 
