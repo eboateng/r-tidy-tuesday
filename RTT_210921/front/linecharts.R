@@ -2,9 +2,9 @@ library(ggrepel)
 library(ggtext)
 
 distLineViz <- function(df){
-  showPlot <- showPlot %>% 
+  showPlot <- df %>% 
     mutate(label = if_else(year == max(year), as.character(logo), NA_character_))
-  
+  backgroundcolor <- "#ECF0F5"
   ggplot(showPlot, aes(x=year, y=Winner, group=distributor)) +
     geom_line(aes(color=distributor))+
     geom_point(aes(color=distributor))+
