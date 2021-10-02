@@ -1,12 +1,10 @@
-devtools::install_git("https://git.rud.is/hrbrmstr/waffle.git")
 library(tidyverse)
 library(data.table)
 library(plotly)
-library(waffle)
+pkgload::load_all(path="waffle-master")
 source("front/doubleBarPlot.R")
 source("front/wafflesPlot.R")
 source("front/linecharts.R")
-
 source("backend/filters.R")
 source("backend/dataCharts.R")
 
