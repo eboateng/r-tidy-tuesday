@@ -44,3 +44,22 @@ generateData_chart2 <- function(df, show){
   df_melt <- reshape2::melt(showsYear, id.vars=c('year','title'))
   return(df_melt)
 }
+
+
+generateData_chart4 <- function(df){
+  showPlot <-
+    df %>%
+    filter(distributor%in% c('netflix', 'hbo', 'prime video', 'apple tv', 'disney+'))%>%
+    group_by(distributor, type, year) %>%
+    summarise(no = n()) %>%
+    spread (type, no)
+  
+  showPlot[is.na(showPlot)] <- 0
+  showPlot$logo <- NA
+  showPlot$logo[showPlot$distributor=='netflix'] <- "<img width=20 src='https://i.pinimg.com/originals/8c/51/0e/8c510ee7de078ac4eaafdb9d15a810dd.png'>"
+  showPlot$logo[showPlot$distributor=='apple tv'] <- "<img width=20 src='https://wiseplaylistasiptv.com/wp-content/uploads/2020/11/1269701_ico.png'>"
+  showPlot$logo[showPlot$distributor=='hbo'] <- "<img width=20 src='https://img.apksum.com/e2/com.hbo.android.app/3.6.1/icon.png'>"
+  showPlot$logo[showPlot$distributor=='disney+'] <- "<img width=20 src='https://cdn.iconscout.com/icon/free/png-256/disney-282116.png'>"
+  showPlot$logo[showPlot$distributor=='prime video'] <- "<img width=20 src='https://m.media-amazon.com/images/G/01/digital/video/acquisition/amazon_video_light_on_dark.png'>"
+  return(showPlot)
+}

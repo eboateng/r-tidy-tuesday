@@ -45,6 +45,10 @@ ui <- dashboardPage(
       column(
         width = 6,
         imageOutput("chart3")
+      ),
+      column(
+        width = 6,
+        imageOutput("chart4")
       )
     )
   )

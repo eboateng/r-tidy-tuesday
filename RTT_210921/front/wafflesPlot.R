@@ -1,4 +1,4 @@
-library(waffle)
+
 viz_waffles <- function(df){
   backgroundcolor <- "#ECF0F5"
   ggplot(df, aes(fill = variable, values = value)) +
